@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 import mysql.connector
+from flask_cors import cross_origin
 
 app = Flask(__name__)
 
@@ -8,11 +9,25 @@ con=mysql.connector.connect(
     host='localhost',
     user='root',
     password='admin@1234',
-    database='sakila'
-    
+    database='sakila' 
 )
 
+@app.route("/getFilms", methods=['GET'])
+@cross_origin()
+def get_films():
+    cursor=con.cursor(dictionary=True) #gets each entry as a dict with column names
+    
+    #gets all customer data
+    cursor.execute("""
+        select *
+        from film;
+        """)
+    data=cursor.fetchall() #fetch the query result into data
+    cursor.close()
+    return jsonify({"films":data}), 200 #return a json of data
+
 @app.route("/getCustomers", methods=['GET'])
+@cross_origin()
 def get_customers():
     cursor=con.cursor(dictionary=True) #gets each entry as a dict with column names
     
@@ -53,9 +68,9 @@ def top_films():
 
 @app.route("/topActors")
 def topActors():
-    cursor=con.cursor()
+    cursor=con.cursor(dictionary=True)
     cursor.execute("""
-        select a.first_name, a.last_name, count(fa.film_id) as movies
+        select a.first_name, a.last_name, count(fa.film_id) as movies, a.actor_id
         from film_actor as fa
         join actor as a
         on fa.actor_id = a.actor_id
@@ -65,12 +80,15 @@ def topActors():
         """)
     actors=cursor.fetchall()
     cursor.close()
-    
+    """
     topactors =[]
     for actor in actors:
         name = actor[0] + " " +actor[1]
         topactors.append(name)
     return jsonify({"Actors": topactors}), 200
+    """
+    return jsonify({"Actors": actors}), 200
+    
     
 
 #remove at some point

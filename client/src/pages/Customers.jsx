@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import NavbarComp from '../components/navbar'
 
 const Customers = () => {
   const [data, setData] = useState([])
@@ -11,7 +12,9 @@ const Customers = () => {
   }, [])
 
   return (
-    
+
+    <div>
+        <NavbarComp/>
     <div className='container'>
         <div className='mt-3'>
             <table className='table'>
@@ -49,6 +52,8 @@ const Customers = () => {
             </table>
         </div>
     </div>
+
+  </div>
   )
 }
 

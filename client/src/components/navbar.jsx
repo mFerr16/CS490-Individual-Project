@@ -12,23 +12,28 @@ import {
 } from "react-router-dom";
 
 const NavbarComp = () => {
-    <Router>
-        <Routes>
-            <Route path='/Customers' element={<Customers/>}/>
-        </Routes>
-    </Router>
-  return (
 
+    function getCustomerList(){
+      return <Customers/>
+    }
+
+  return (
+    <Router>
       <Navbar bg="light" data-db-theme="dark">
         <Container>
           <Navbar.Brand href="#home">Sakila</Navbar.Brand>
-          <Nav classname = "ms-auto">
+          <Nav className = "ms-auto">
             <Nav.Link href = "/">Home</Nav.Link>
             <Nav.Link href = "/">Films</Nav.Link>
             <Nav.Link href="/Customers">Customers</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
+
+      <Routes>
+            <Route path='/Customers' element={<getCustomerList/>}/>
+        </Routes>
+    </Router>
 
 
   )

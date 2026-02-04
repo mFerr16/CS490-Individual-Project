@@ -12,6 +12,7 @@ const App = () => {
     <div>
       <div>
         <NavbarComp/>
+        <Customers/>
       </div>
     </div>
   )

@@ -7,10 +7,23 @@ app = Flask(__name__)
 con=mysql.connector.connect(
     host='localhost',
     user='root',
-    password='',
+    password='admin@1234',
     database='sakila'
     
 )
+
+@app.route("/getCustomers", methods=['GET'])
+def get_customers():
+    cursor=con.cursor(dictionary=True) #gets each entry as a dict with column names
+    
+    #gets all customer data
+    cursor.execute("""
+        select *
+        from customer;
+        """)
+    data=cursor.fetchall() #fetch the query result into data
+    cursor.close()
+    return jsonify({"customers":data}), 200 #return a json of data
 
 @app.route("/getTable", methods=['GET'])
 def get_tables():
@@ -22,7 +35,7 @@ def get_tables():
     return jsonify({"Top Films": table_names}), 200
 
 @app.route("/topFilms", methods=['GET'])
-def topFilms():
+def top_films():
     cursor=con.cursor()
     cursor.execute("""
         select f.title
@@ -38,10 +51,33 @@ def topFilms():
     film_names = [film[0] for film in films]
     return jsonify({"Films": film_names}), 200
 
+@app.route("/topActors")
+def topActors():
+    cursor=con.cursor()
+    cursor.execute("""
+        select a.first_name, a.last_name, count(fa.film_id) as movies
+        from film_actor as fa
+        join actor as a
+        on fa.actor_id = a.actor_id
+        group by fa.actor_id
+        order by movies desc
+        limit 5;
+        """)
+    actors=cursor.fetchall()
+    cursor.close()
+    
+    topactors =[]
+    for actor in actors:
+        name = actor[0] + " " +actor[1]
+        topactors.append(name)
+    return jsonify({"Actors": topactors}), 200
+    
 
+#remove at some point
 @app.route("/members")
 def members():
     return {"members": ["M1", " M2", "M3"]}
 
 if __name__ == "__main__":
     app.run(debug=True, host='localhost', port='5000')
+    con.close()

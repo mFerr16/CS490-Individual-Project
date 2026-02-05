@@ -68,9 +68,9 @@ def top_films():
 
 @app.route("/topActors")
 def topActors():
-    cursor=con.cursor(dictionary=True)
+    cursor=con.cursor()
     cursor.execute("""
-        select a.first_name, a.last_name, count(fa.film_id) as movies, a.actor_id
+        select a.first_name, a.last_name, count(fa.film_id) as movies
         from film_actor as fa
         join actor as a
         on fa.actor_id = a.actor_id
@@ -80,15 +80,39 @@ def topActors():
         """)
     actors=cursor.fetchall()
     cursor.close()
-    """
+    
     topactors =[]
     for actor in actors:
         name = actor[0] + " " +actor[1]
         topactors.append(name)
     return jsonify({"Actors": topactors}), 200
-    """
-    return jsonify({"Actors": actors}), 200
-    
+
+@app.route("/topRentedFilms", methods=["GET"])
+def top_rented_films():
+    cursor = con.cursor()
+    cursor.execute("""
+        select f.film_id, f.title, count(r.rental_id) as rental_count
+        from rental r
+        join inventory i on r.inventory_id = i.inventory_id
+        join film f on i.film_id = f.film_id
+        group by f.film_id, f.title
+        order by rental_count desc
+        limit 5;
+    """)
+    rows = cursor.fetchall()
+    cursor.close()
+
+    top_films = []
+    for row in rows:
+        top_films.append({
+            "film_id": row[0],
+            "title": row[1],
+            "rental_count": row[2]
+        })
+
+    return jsonify({"Top Rented Films": top_films}), 200
+
+
     
 
 #remove at some point

@@ -13,7 +13,7 @@ const NavbarComp = () => {
           <Navbar.Brand href="/Home">Sakila</Navbar.Brand>
           <Nav className = "ms-auto">
             <Nav.Link href = "/Home">Home</Nav.Link>
-            <Nav.Link href = "/Film">Films</Nav.Link>
+            <Nav.Link href = "/Films">Films</Nav.Link>
             <Nav.Link href="/Customers">Customers</Nav.Link>
           </Nav>
         </Container>

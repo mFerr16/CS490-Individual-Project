@@ -22,9 +22,9 @@ def get_films():
         select *
         from film;
         """)
-    data=cursor.fetchall() #fetch the query result into data
+    films=cursor.fetchall() #fetch the query result into data
     cursor.close()
-    return jsonify({"films":data}), 200 #return a json of data
+    return jsonify({"films":films}), 200 #return a json of data
 
 @app.route("/getCustomers", methods=['GET'])
 @cross_origin()

@@ -19,8 +19,12 @@ def get_films():
     
     #gets all customer data
     cursor.execute("""
-        select *
-        from film;
+        select f.film_id, f.title, f.rating, f.last_update, fc.category_id, c.name
+        from film as f
+        join film_category as fc
+        on f.film_id = fc.film_id
+        join category as c 
+        on fc.category_id = c.category_id;
         """)
     films=cursor.fetchall() #fetch the query result into data
     cursor.close()
@@ -48,23 +52,6 @@ def get_tables():
     cursor.close()
     table_names=[table[0] for table in tables]
     return jsonify({"Top Films": table_names}), 200
-
-@app.route("/topFilms", methods=['GET'])
-def top_films():
-    cursor=con.cursor()
-    cursor.execute("""
-        select f.title
-        from film as f
-        join film_category as fc
-        on f.film_id = fc.film_id
-        join category as c 
-        on fc.category_id = c.category_id
-        limit 5;
-        """)
-    films=cursor.fetchall()
-    cursor.close()
-    film_names = [film[0] for film in films]
-    return jsonify({"Films": film_names}), 200
 
 @app.route("/topActors")
 def topActors():
@@ -112,13 +99,6 @@ def top_rented_films():
 
     return jsonify({"Top Rented Films": top_films}), 200
 
-
-    
-
-#remove at some point
-@app.route("/members")
-def members():
-    return {"members": ["M1", " M2", "M3"]}
 
 if __name__ == "__main__":
     app.run(debug=True, host='localhost', port='5000')

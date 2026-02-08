@@ -36,17 +36,15 @@ const [data, setData] = useState([])
     },
   ]
 
-
   const [records, setRecords] = useState(data);
 
   function handleFilter(event){
       const newData = records.filter(
         row=> {
-          return row.film_id.toLowerCase().includes(event.target.value.toLowerCase())
+          return row.title.includes(event.target.value.toUppeerCase())
         })
         setRecords(newData)
   }
-
 
   return (
     <div>
@@ -54,7 +52,7 @@ const [data, setData] = useState([])
 
       <div className='container mt-5'>
         <input placeholder="Search" type="text" onChange={handleFilter}/>
-        <DataTable columns={columns} data={data} fixedHeader pagination />
+        <DataTable columns={columns} data={data} fixedHeader pagination theme='light' expandableRows />
       </div>
     </div>
   )

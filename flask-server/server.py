@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 import mysql.connector
 from flask_cors import cross_origin
+from markupsafe import escape
 
 app = Flask(__name__)
 
@@ -11,6 +12,7 @@ con=mysql.connector.connect(
     password='admin@1234',
     database='sakila' 
 )
+
 
 @app.route("/getFilms", methods=['GET'])
 @cross_origin()

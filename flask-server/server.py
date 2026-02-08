@@ -1,25 +1,31 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import mysql.connector
 from flask_cors import cross_origin
 from markupsafe import escape
 
-app = Flask(__name__)
+import os
+from dotenv import load_dotenv
 
-#create connection to db
+# Load environment variables from .env file
+load_dotenv()
+
+app = Flask(__name__)
+CORS(app)
+
+#create connection to db using environment variables
 con=mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='admin@1234',
-    database='sakila' 
+    host=os.getenv('database_host'),
+    user=os.getenv('database_user'),
+    password=os.getenv('database_pass'),
+    database=os.getenv('database_name')
 )
 
 
 @app.route("/getFilms", methods=['GET'])
-@cross_origin()
 def get_films():
-    cursor=con.cursor(dictionary=True) #gets each entry as a dict with column names
+    cursor=con.cursor(dictionary=True)
     
-    #gets all customer data
     cursor.execute("""
         select f.film_id, f.title, f.rating, f.last_update, fc.category_id, c.name
         from film as f
@@ -28,23 +34,21 @@ def get_films():
         join category as c 
         on fc.category_id = c.category_id;
         """)
-    films=cursor.fetchall() #fetch the query result into data
+    films=cursor.fetchall()
     cursor.close()
-    return jsonify({"films":films}), 200 #return a json of data
+    return jsonify({"films":films}), 200
 
 @app.route("/getCustomers", methods=['GET'])
-@cross_origin()
 def get_customers():
-    cursor=con.cursor(dictionary=True) #gets each entry as a dict with column names
+    cursor=con.cursor(dictionary=True)
     
-    #gets all customer data
     cursor.execute("""
         select *
         from customer;
         """)
-    data=cursor.fetchall() #fetch the query result into data
+    data=cursor.fetchall()
     cursor.close()
-    return jsonify({"customers":data}), 200 #return a json of data
+    return jsonify({"customers":data}), 200
 
 @app.route("/getTable", methods=['GET'])
 def get_tables():
@@ -87,10 +91,10 @@ def top_rented_films():
         group by f.film_id, f.title
         order by rental_count desc
         limit 5;
-    """)
-    rows = cursor.fetchall()
+        """)
+    rows=cursor.fetchall()
     cursor.close()
-
+    
     top_films = []
     for row in rows:
         top_films.append({
@@ -98,9 +102,8 @@ def top_rented_films():
             "title": row[1],
             "rental_count": row[2]
         })
-
+    
     return jsonify({"Top Rented Films": top_films}), 200
-
 
 if __name__ == "__main__":
     app.run(debug=True, host='localhost', port='5000')

@@ -5,16 +5,26 @@ import DataTable from 'react-data-table-component'
 
 const Films = () => {
 const [data, setData] = useState([])
+const [records, setRecords] = useState([]);
+
   useEffect(()=>{
     axios.get('http://localhost:5000/getFilms')
-    .then(res=> setData(res.data.films))
+    .then(res=> {
+      setData(res.data.films)
+      setRecords(res.data.films)
+    })
     .catch(err=>console.log(err))
   }, [])
 
   const columns = [
     {
       name: 'Film ID',
-      selector: row=>row.film_id
+      cell: row=>(
+        <div data-tag="allowRowEvents" onClick={e => handleRowClicked(e, row.film_id)} style={{ cursor: 'pointer' }}>
+          {row.film_id}
+        </div>
+      ),
+      sortable: true
     },
     {
       name: 'Title',
@@ -27,23 +37,36 @@ const [data, setData] = useState([])
       sortable: true
     },
     {
-      name: 'Rating',
-      selector: row=>row.rating
-    },
-    {
       name: 'Last Update',
       selector: row=>row.last_update
     },
   ]
 
-  const [records, setRecords] = useState(data);
-
   function handleFilter(event){
-      const newData = records.filter(
-        row=> {
-          return row.title.includes(event.target.value.toUppeerCase())
-        })
+      const value = event.target.value.toLowerCase()
+      const newData = data.filter(
+        row=> 
+          row.title.toLowerCase().includes(value) ||
+          row.name.toLowerCase().includes(value) ||
+          JSON.stringify(row.film_id).includes(value)
+        )
         setRecords(newData)
+  }
+
+  const [openPopup, setOpenPopup] = useState(false)
+
+  // not working
+  const handleRowClicked = (row, event) => {
+      console.log(row.film_id)
+      return(
+      <div className="rounded-md p-4 bg-white popup">
+        <div className = "flex flex-row justify-between">
+          <h2>Popup</h2>
+          <button onClick={()=>setOpenPopup(false)}></button>
+        </div>
+        <p className ="text-xl">Popup message here: </p>
+      </div>
+      )
   }
 
   return (
@@ -52,7 +75,7 @@ const [data, setData] = useState([])
 
       <div className='container mt-5'>
         <input placeholder="Search" type="text" onChange={handleFilter}/>
-        <DataTable columns={columns} data={data} fixedHeader pagination theme='light' expandableRows />
+        <DataTable columns={columns} data={records} fixedHeader pagination theme='light' onRowClicked={handleRowClicked} />
       </div>
     </div>
   )

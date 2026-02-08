@@ -5,17 +5,22 @@ import DataTable from 'react-data-table-component'
 
 const Customers = () => {
   const [data, setData] = useState([])
+  const [records, setRecords] = useState([]);
 
   useEffect(()=>{
     axios.get('http://localhost:5000/getCustomers')
-    .then(res=> setData(res.data.customers))
+    .then(res=> {
+        setData(res.data.customers)
+        setRecords(res.data.customers)
+    })
     .catch(err=>console.log(err))
   }, [])
 
   const columns=[
     {
         name: "Customer ID",
-        selector: row=>row.customer_id
+        selector: row=>row.customer_id,
+        sortable: true
     },
     {
         name: "First Name",
@@ -52,13 +57,24 @@ const Customers = () => {
     
   ]
 
+  function handleFilter(event){
+      const value = event.target.value.toLowerCase()
+      const newData = data.filter(
+        row=> 
+          row.first_name.toLowerCase().includes(value) ||
+          row.last_name.toLowerCase().includes(value) ||
+          JSON.stringify(row.customer_id).includes(value)
+        )
+        setRecords(newData)
+  }
+
   return (
 
     <div>
         <NavbarComp/>
     <div className='container mt-5'>
-        <input placeholder="Search" type="text" />
-        <DataTable columns={ columns } data={ data } pagination fixedHeader/>
+        <input placeholder="Search" type="text" onChange={handleFilter}/>
+        <DataTable columns={ columns } data={ records } pagination fixedHeader/>
     </div>
   </div>
   )

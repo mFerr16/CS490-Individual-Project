@@ -30,15 +30,27 @@ const BUTTON_STYLES={
   height:"5px"
 }
 
+const MODALHEADER_STYLES={
+  height: "10%",
+  width: "50%",
+  top: 0,
+  backgroundColor:"#4444444",
+
+}
+
 export default function Modal( { open, children, onClose } ) {
   if(!open) return null 
   return ReactDOM.createPortal(
     <>
-      <div style={OVERLAY_STYLES}></div>
+      <div style={OVERLAY_STYLES}></div>  
       <div style={MODAL_STYLES}>
+        <div styles={MODALHEADER_STYLES}>
           <button style={BUTTON_STYLES} onClick={onClose}>X</button>
-          {children}
+        </div>
+        {children}
+
       </div>
+
     </>,
     document.getElementById("portal")
   )

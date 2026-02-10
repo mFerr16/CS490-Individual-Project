@@ -16,9 +16,16 @@ const MODHEAD_STYLES={
 
 const Films = () => {
 
+ const filler = [{
+  "desription": " ",
+  "rating": " ",
+  "rental_duration": " ",
+  "rental_rate": " "
+ }]
+
   const [data, setData] = useState([])
   const [records, setRecords] = useState([]);
-  const [modInfo, setModInfo] = useState([]);
+  const [modInfo, setModInfo] = useState(filler);
 
   const [show, setShow] = useState(false);
   const [modTitle, setModTitle] = useState("");
@@ -92,7 +99,6 @@ const Films = () => {
     <>
       <div>
         <NavbarComp/>
-
         <div className='container mt-5'>
           <input placeholder="Search" type="text" onChange={handleFilter}/>
           <DataTable columns={columns} data={records} fixedHeader pagination theme='light' />
@@ -102,10 +108,10 @@ const Films = () => {
               <p>{modTitle}</p>
             </div>
             <div>
-              Description: {modInfo.description} <br/>
-              Rating: {modInfo.rating} <br/>
-              Rental Duration: {modInfo.rental_duration} <br/>
-              Rental Rate: {modInfo.rental_rate} <br/>
+              Description: {modInfo[0].description} <br/>
+              Rating: {modInfo[0].rating} <br/>
+              Rental Duration: {modInfo[0].rental_duration} Days <br/>
+              Rental Rate: ${modInfo[0].rental_rate} <br/>
             </div>
         </Modal>
       </div>

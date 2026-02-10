@@ -49,10 +49,6 @@ const Customers = () => {
     {
         name: "Last Update",
         selector: row=>row.last_update
-    },
-    {
-        name: "Store ID",
-        selector: row=>row.store_id
     }
     
   ]

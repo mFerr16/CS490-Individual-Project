@@ -8,13 +8,25 @@ import { Link } from 'react-router-dom';
 const NavbarComp = () => {
 
   return (
-      <Navbar bg="light" data-db-theme="dark">
+      <Navbar style={{backgroundColor:"#f58f5c"}} data-db-theme="dark">
         <Container>
           <Navbar.Brand href="/Home">Sakila</Navbar.Brand>
           <Nav className = "ms-auto">
-            <Nav.Link href = "/Home">Home</Nav.Link>
-            <Nav.Link href = "/Films">Films</Nav.Link>
-            <Nav.Link href="/Customers">Customers</Nav.Link>
+            <Nav.Link href = "/Home">
+              <font color="white">
+                Home
+              </font>
+            </Nav.Link>
+            <Nav.Link href = "/Films">
+              <font color="white">
+                Films
+              </font>
+            </Nav.Link>
+            <Nav.Link href="/Customers">
+              <font color="white">
+                Customers
+              </font>
+            </Nav.Link>
           </Nav>
         </Container>
       </Navbar>

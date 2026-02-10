@@ -5,19 +5,10 @@ import DataTable from 'react-data-table-component'
 import { CgInfo } from "react-icons/cg"
 import Modal from '../components/Modal'
 
-const MODHEAD_STYLES={
-  position:"fixed",
-  background:"none",
-  border:"none",
-  top:0,
-  left:"10px",
-  height:"5px"
-}
-
 const Films = () => {
 
  const filler = [{
-  "desription": " ",
+  "description": " ",
   "rating": " ",
   "rental_duration": " ",
   "rental_rate": " "
@@ -101,17 +92,14 @@ const Films = () => {
         <NavbarComp/>
         <div className='container mt-5'>
           <input placeholder="Search" type="text" onChange={handleFilter}/>
-          <DataTable columns={columns} data={records} fixedHeader pagination theme='light' />
+          <DataTable show={false} columns={columns} data={records} fixedHeader pagination theme='light' />
         </div>
-        <Modal open={show} onClose={handleClose}>
-            <div style={MODHEAD_STYLES}>
-              <p>{modTitle}</p>
-            </div>
+        <Modal open={show} onClose={handleClose} title={modTitle}>
             <div>
-              Description: {modInfo[0].description} <br/>
-              Rating: {modInfo[0].rating} <br/>
-              Rental Duration: {modInfo[0].rental_duration} Days <br/>
-              Rental Rate: ${modInfo[0].rental_rate} <br/>
+              <b>Description</b>: {modInfo[0].description} <br/>
+              <b>Rating</b>: {modInfo[0].rating} <br/>
+              <b>Rental Duration</b>: {modInfo[0].rental_duration} Days <br/>
+              <b>Rental Rate</b>: ${modInfo[0].rental_rate} <br/>
             </div>
         </Modal>
       </div>

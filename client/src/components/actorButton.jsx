@@ -6,7 +6,8 @@ const BUTTON_STYLES={
   padding: "20px",
   width: "100px",
   height: "150px",
-  alignItems: "center"
+  alignItems: "center",
+  overflowWrap: "break-word"
 }
 
 

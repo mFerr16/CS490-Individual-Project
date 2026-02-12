@@ -90,7 +90,7 @@ export default function Modal( { open, children, onClose, title } ) {
           </div>
           <div style={BODY_STYLES}>
             {children}
-              <button style={RENTBUTTON_STYLES}>
+              <button style={RENTBUTTON_STYLES} onClick={()=>console.log("test")}>
                 <font color="white">
                   RENT
                 </font>

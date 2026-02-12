@@ -21,18 +21,63 @@ con=mysql.connector.connect(
     database=os.getenv('database_name')
 )
 
-
+@app.route("/getFilmInfo/<film_id>", methods=['GET', 'POST'])
+@cross_origin()
+def get_filmInfo(film_id):
+    cursor=con.cursor(dictionary=True)
+    cursor.execute("""
+        select f.description, f.rating, f.rental_rate, f.rental_duration, f.special_features, count(*) as inv
+        from inventory as i
+        join film as f
+        on f.film_id=i.film_id
+        where f.film_id = %s;
+        """, (film_id,))
+    film=cursor.fetchall()
+    #need to double check that works as intended
+    cursor.execute("""
+        select count(r.rental_id) as rented
+        from inventory i 
+        left join rental as r
+        on i.inventory_id  = r.inventory_id and r.return_date is null
+        join film f
+        on i.film_id = f.film_id
+        where f.film_id = %s   
+        group by f.film_id;      
+    """, (film_id,))
+    rented=cursor.fetchall()
+    film[0]["rented"] = rented[0]["rented"]
+    film[0]["special_features"] = list(film[0]["special_features"])
+    film[0]["number_available"] = int(film[0]["inv"]) - int(film[0]["rented"])
+    cursor.close()
+    return jsonify({"Info":film}), 200
+    
+    
 @app.route("/getFilms", methods=['GET'])
 def get_films():
     cursor=con.cursor(dictionary=True)
+    """
+    Original query
     
-    cursor.execute("""
-        select f.film_id, f.title, f.rating, f.last_update, fc.category_id, c.name
+    select f.film_id, f.title, f.last_update, fc.category_id, c.name
         from film as f
         join film_category as fc
         on f.film_id = fc.film_id
         join category as c 
         on fc.category_id = c.category_id;
+    """
+    
+    cursor.execute("""
+        select f.film_id, f.title, f.last_update, c.name, group_concat(concat(a.first_name, ' ', a.last_name)) as actors
+		from film_actor fa
+		join actor a
+		on fa.actor_id = a.actor_id 
+        join film as f
+        on f.film_id = fa.film_id 
+        join film_category as fc
+        on f.film_id = fc.film_id
+        join category as c 
+        on fc.category_id = c.category_id
+        group by f.film_id, c.name; 
         """)
     films=cursor.fetchall()
     cursor.close()

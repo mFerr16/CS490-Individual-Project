@@ -71,6 +71,11 @@ const Films = () => {
     {
       name: 'Last Update',
       selector: row=>row.last_update
+    },
+    {
+      name: 'actors',
+      selector: row=>row.actors,
+      omit: true
     }
     
   ]
@@ -81,7 +86,8 @@ const Films = () => {
         row=> 
           row.title.toLowerCase().includes(value) ||
           row.name.toLowerCase().includes(value) ||
-          JSON.stringify(row.film_id).includes(value)
+          row.actors.toLowerCase().includes(value) ||
+          JSON.stringify(row.film_id) === value
         )
         setRecords(newData)
   }
@@ -100,6 +106,8 @@ const Films = () => {
               <b>Rating</b>: {modInfo[0].rating} <br/>
               <b>Rental Duration</b>: {modInfo[0].rental_duration} Days <br/>
               <b>Rental Rate</b>: ${modInfo[0].rental_rate} <br/>
+              <b>Inventory</b>: {modInfo[0].inv} <br/>
+              <b>Available</b>: {modInfo[0].number_available}
             </div>
         </Modal>
       </div>

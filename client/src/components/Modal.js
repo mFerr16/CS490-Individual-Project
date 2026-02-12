@@ -7,20 +7,23 @@ const MODAL_STYLES={
   left:"50%",
   transform:"translate(-50%, -50%)",
   backgroundColor:"#FFF",
-  padding:"50px",
+  paddingTop:"50px",
+  paddingBottom:"50px",
+  paddingRight:"25px",
   zIndex:1000,
 }
 
 const OVERLAY_STYLES={
-  postition:"fixed",
-  top:0,
-  left:0,
-  right:0,
-  bottom:0,
-  width:"100%",
-  height:"100%",
-  backgroundColor:"rgba(0, 0, 0, .7)",
-  zIndex:1000
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex:1000,
 }
 
 const BUTTON_STYLES={
@@ -38,7 +41,7 @@ const MODHEAD_STYLES={
   top:0,
   left:0,
   right:0,
-  height:"20%"
+  height:"20%",
 }
 
 const TITLE_STYLES={
@@ -51,29 +54,35 @@ const TITLE_STYLES={
 }
 
 const BODY_STYLES={
-  position:"absolute",
-  left:"10px",
+  position:"relative",
+  top:"15px",
+  left:"25px",
+  paddingRight:"15px",
+  overflow:"hidden"
 }
 
 export default function Modal( { open, children, onClose, title } ) {
   if(!open) return null 
   return ReactDOM.createPortal(
     <>
-      <div style={OVERLAY_STYLES}/> 
-      <div style={MODAL_STYLES}>
-        <div style={MODHEAD_STYLES}>
-          <p style={TITLE_STYLES}>
-            <font color="white">
-              {title}
-            </font>
-          </p>
-          <button style={BUTTON_STYLES} onClick={onClose}>
-            <font color="#FFFF">
-              X
-            </font>
-          </button>
+      <div style={OVERLAY_STYLES}>
+        <div style={MODAL_STYLES}>
+          <div style={MODHEAD_STYLES}>
+            <p style={TITLE_STYLES}>
+              <font color="white">
+                {title}
+              </font>
+            </p>
+            <button style={BUTTON_STYLES} onClick={onClose}>
+              <font color="#FFFF">
+                X
+              </font>
+            </button>
+          </div>
+          <div style={BODY_STYLES}>
+            {children}
+          </div>
         </div>
-        {children}
       </div>
     </>,
     document.getElementById("portal")

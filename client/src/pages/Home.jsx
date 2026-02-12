@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import NavbarComp from '../components/navbar'
 import ActorButton from '../components/actorButton'
+import { Container } from 'react-bootstrap'
+
+const ACTOR_STYLES={
+  bottom:"50%",
+  height:"50%",
+  alignItems: "center"
+}
 
 const Home = () => {
   const [data, setData] = useState([])
@@ -14,7 +21,9 @@ const Home = () => {
 
   return (
     <div>
-      <NavbarComp/>
+      <div>
+        <NavbarComp/>
+      </div>
       <div className='container'>
         <h2 className='mt-3'>Top 5 Rented Films</h2>
         <table className='table mt-3'>
@@ -36,9 +45,26 @@ const Home = () => {
           </tbody>
         </table>
       </div>
-      <ActorButton>
-        Test
-      </ActorButton>
+      {/*
+      <div style={ACTOR_STYLES}>
+        <Container>
+          <ActorButton>
+            test1
+          </ActorButton>
+          <ActorButton>
+            test2
+          </ActorButton>
+          <ActorButton>
+            test3
+          </ActorButton>
+          <ActorButton>
+            test4
+          </ActorButton>
+          <ActorButton>
+            test5
+          </ActorButton>
+        </Container>
+      </div>*/}
     </div>
   )
 }

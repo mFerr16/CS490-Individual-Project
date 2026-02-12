@@ -44,14 +44,14 @@ const Films = () => {
 
 
   const columns = [
+    //width: '3rem' 
     {
       name: "",
       sortable: false,
       button: "true",
       cell: row=>(
         <button style={{background:'none', border:'none'}} onClick={()=>openMod(row)}><CgInfo/></button>
-      ),
-      allowOverFlow: true
+      )
     },
     {
       name: 'Film ID',

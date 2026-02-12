@@ -1,19 +1,23 @@
 import React from 'react'
-import { Button } from 'react-bootstrap'
 
-const ActorButton = ({FName, LName, A_ID}) => {
-    const [data, setData] = useState([])
+const BUTTON_STYLES={
+  borderRadius: "25px",
+  backgroundColor: "#73AD21",
+  padding: "20px",
+  width: "100px",
+  height: "150px",
+  alignItems: "center"
+}
 
-  useEffect(()=>{
-    axios.get('http://localhost:5000/topActors')
-    .then(res=> setData(res.data.actors))
-    .catch(err=>console.log(err))
-  }, [])
+
+const ActorButton = ({children}) => {
 
   return (
-        <Button size='lg'>
-          
-        </Button>
+        <button style={BUTTON_STYLES} size='lg'>
+          <div>
+            {children}
+          </div>
+        </button>
   )
 }
 

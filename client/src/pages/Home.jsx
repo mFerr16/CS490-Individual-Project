@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import NavbarComp from '../components/navbar'
+import ActorButton from '../components/actorButton'
 
 const Home = () => {
   const [data, setData] = useState([])
@@ -35,6 +36,9 @@ const Home = () => {
           </tbody>
         </table>
       </div>
+      <ActorButton>
+        Test
+      </ActorButton>
     </div>
   )
 }

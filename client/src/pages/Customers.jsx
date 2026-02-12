@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import NavbarComp from '../components/navbar'
-import DataTable from 'react-data-table-component'
+import DataTable from 'react-data-table-component';
+
+const EDITBUTTON_STYLES={
+    alignItems: "center",
+    backgroundColor:"#6b6b6b9f"
+}
+
 
 const Customers = () => {
   const [data, setData] = useState([])
@@ -20,37 +26,45 @@ const Customers = () => {
     {
         name: "Customer ID",
         selector: row=>row.customer_id,
-        sortable: true
+        sortable: true,
+        width:"8rem"
     },
     {
         name: "First Name",
-        selector: row=>row.first_name
+        selector: row=>row.first_name,
+        width:"7rem"
     },
     {
         name: "Last Name",
-        selector: row=>row.last_name
+        selector: row=>row.last_name,
+        width:"7rem"
     },
     {
         name: "Active",
-        selector: row=>row.active
+        selector: row=>row.active,
+        width:"5rem"
     },
     {
         name: "Address ID",
-        selector: row=>row.address_id
+        selector: row=>row.address_id,
+        width:"6rem"
     },
     {
         name: "Create Date",
-        selector: row=>row.create_date
+        selector: row=>row.create_date,
+        width:"14rem"
     },
     {
         name: "Email",
-        selector: row=>row.email
+        selector: row=>row.email,
+        width:"20rem"
     },
     {
-        name: "Last Update",
-        selector: row=>row.last_update
-    }
-    
+        name: "",
+        cell: row=>(<button style={EDITBUTTON_STYLES} onClick={()=>console.log("WIP")}>Edit</button>),
+        width:"10rem"
+    },
+
   ]
 
   function handleFilter(event){

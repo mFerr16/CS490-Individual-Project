@@ -13,17 +13,19 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-#create connection to db using environment variables
-con=mysql.connector.connect(
-    host=os.getenv('database_host'),
-    user=os.getenv('database_user'),
-    password=os.getenv('database_pass'),
-    database=os.getenv('database_name')
-)
+# Database connection function
+def get_db_connection():
+    return mysql.connector.connect(
+        host=os.getenv('database_host'),
+        user=os.getenv('database_user'),
+        password=os.getenv('database_pass'),
+        database=os.getenv('database_name')
+    )
 
 @app.route("/getFilmInfo/<film_id>", methods=['GET', 'POST'])
 @cross_origin()
 def get_filmInfo(film_id):
+    con = get_db_connection()
     cursor=con.cursor(dictionary=True)
     cursor.execute("""
         select f.description, f.rating, f.rental_rate, f.rental_duration, f.special_features, count(*) as inv
@@ -33,7 +35,6 @@ def get_filmInfo(film_id):
         where f.film_id = %s;
         """, (film_id,))
     film=cursor.fetchall()
-    #need to double check that works as intended
     cursor.execute("""
         select count(r.rental_id) as rented
         from inventory i 
@@ -49,22 +50,14 @@ def get_filmInfo(film_id):
     film[0]["special_features"] = list(film[0]["special_features"])
     film[0]["number_available"] = int(film[0]["inv"]) - int(film[0]["rented"])
     cursor.close()
+    con.close()
     return jsonify({"Info":film}), 200
     
     
 @app.route("/getFilms", methods=['GET'])
 def get_films():
+    con = get_db_connection()
     cursor=con.cursor(dictionary=True)
-    """
-    Original query
-    
-    select f.film_id, f.title, f.last_update, fc.category_id, c.name
-        from film as f
-        join film_category as fc
-        on f.film_id = fc.film_id
-        join category as c 
-        on fc.category_id = c.category_id;
-    """
     
     cursor.execute("""
         select f.film_id, f.title, f.last_update, c.name, group_concat(concat(a.first_name, ' ', a.last_name)) as actors
@@ -81,10 +74,12 @@ def get_films():
         """)
     films=cursor.fetchall()
     cursor.close()
+    con.close()
     return jsonify({"films":films}), 200
 
 @app.route("/getCustomers", methods=['GET'])
 def get_customers():
+    con = get_db_connection()
     cursor=con.cursor(dictionary=True)
     
     cursor.execute("""
@@ -93,19 +88,23 @@ def get_customers():
         """)
     data=cursor.fetchall()
     cursor.close()
+    con.close()
     return jsonify({"customers":data}), 200
 
 @app.route("/getTable", methods=['GET'])
 def get_tables():
+    con = get_db_connection()
     cursor=con.cursor()
     cursor.execute("SHOW TABLES;")
     tables=cursor.fetchall()
     cursor.close()
+    con.close()
     table_names=[table[0] for table in tables]
     return jsonify({"Top Films": table_names}), 200
 
 @app.route("/topActors")
 def topActors():
+    con = get_db_connection()
     cursor=con.cursor()
     cursor.execute("""
         select a.first_name, a.last_name, count(fa.film_id) as movies
@@ -118,6 +117,7 @@ def topActors():
         """)
     actors=cursor.fetchall()
     cursor.close()
+    con.close()
     
     topactors =[]
     for actor in actors:
@@ -127,6 +127,7 @@ def topActors():
 
 @app.route("/topRentedFilms", methods=["GET"])
 def top_rented_films():
+    con = get_db_connection()
     cursor = con.cursor()
     cursor.execute("""
         select f.film_id, f.title, count(r.rental_id) as rental_count
@@ -139,6 +140,7 @@ def top_rented_films():
         """)
     rows=cursor.fetchall()
     cursor.close()
+    con.close()
     
     top_films = []
     for row in rows:
@@ -152,4 +154,3 @@ def top_rented_films():
 
 if __name__ == "__main__":
     app.run(debug=True, host='localhost', port='5000')
-    con.close()

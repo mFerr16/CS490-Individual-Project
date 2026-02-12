@@ -2,15 +2,47 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import NavbarComp from '../components/navbar'
 import ActorButton from '../components/actorButton'
+import Modal from '../components/Modal'
 
 const Home = () => {
   const [data, setData] = useState([])
+  const [actors, setActors] = useState([])
+  
+  const filler = [{
+    "description": " ",
+    "rating": " ",
+    "rental_duration": " ",
+    "rental_rate": " "
+  }]
+  
+  const [modInfo, setModInfo] = useState(filler)
+  const [show, setShow] = useState(false)
+  const [modTitle, setModTitle] = useState("")
 
   useEffect(() => {
     axios.get('http://localhost:5000/topRentedFilms')
     .then(res => setData(res.data["Top Rented Films"]))
     .catch(err => console.log(err))
   }, [])
+
+  useEffect(() => {
+    axios.get('http://localhost:5000/topActors')
+    .then(res => setActors(res.data["Actors"]))
+    .catch(err => console.log(err))
+  }, [])
+
+  const openMod = async(film) => {
+    await axios.get('http://localhost:5000/getFilmInfo/' + JSON.stringify(film.film_id))
+    .then(res => {
+      setModInfo(res.data.Info)
+      setModTitle(film.title)
+    })
+    .then(handleShow)
+    .catch(err => console.log(err))
+  }
+
+  const handleClose = () => setShow(false)
+  const handleShow = () => setShow(true)
 
   return (
     <div>
@@ -28,17 +60,45 @@ const Home = () => {
             {
               data.map((film) => {
                 return <tr key={film.film_id}>
-                  <td>{film.title}</td>
+                  <td>
+                    <button 
+                      style={{background:'none', border:'none', color:'black', cursor:'pointer', textDecoration:'none', padding:0, textAlign:'left'}} 
+                      onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+                      onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+                      onClick={() => openMod(film)}
+                    >
+                      {film.title}
+                    </button>
+                  </td>
                   <td>{film.rental_count}</td>
                 </tr>
               })
             }
           </tbody>
         </table>
+
+        <h2 className='mt-5'>Top 5 Actors</h2>
+        <div className='mt-3'>
+          {
+            actors.map((actor, index) => (
+              <ActorButton key={index}>
+                {actor}
+              </ActorButton>
+            ))
+          }
+        </div>
       </div>
-      <ActorButton>
-        Test
-      </ActorButton>
+      
+      <Modal open={show} onClose={handleClose} title={modTitle}>
+        <div>
+          <b>Description</b>: {modInfo[0].description} <br/>
+          <b>Rating</b>: {modInfo[0].rating} <br/>
+          <b>Rental Duration</b>: {modInfo[0].rental_duration} Days <br/>
+          <b>Rental Rate</b>: ${modInfo[0].rental_rate} <br/>
+          <b>Inventory</b>: {modInfo[0].inv} <br/>
+          <b>Available</b>: {modInfo[0].number_available}
+        </div>
+      </Modal>
     </div>
   )
 }

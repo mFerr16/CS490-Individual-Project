@@ -6,14 +6,14 @@ const BUTTON_STYLES={
   padding: "20px",
   width: "100px",
   height: "150px",
-  alignItems: "center"
+  alignItems: "center",
+  cursor: "pointer"
 }
 
-
-const ActorButton = ({children}) => {
+const ActorButton = ({children, onClick}) => {
 
   return (
-        <button style={BUTTON_STYLES} size='lg'>
+        <button style={BUTTON_STYLES} size='lg' onClick={onClick}>
           <div>
             {children}
           </div>

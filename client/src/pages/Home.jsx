@@ -8,15 +8,23 @@ const Home = () => {
   const [data, setData] = useState([])
   const [actors, setActors] = useState([])
   
-  const filler = [{
+  const filmFiller = [{
     "description": " ",
     "rating": " ",
     "rental_duration": " ",
     "rental_rate": " "
   }]
+
+  const actorFiller = [{
+    "actor_name": " ",
+    "total_films": " ",
+    "top_films": []
+  }]
   
-  const [modInfo, setModInfo] = useState(filler)
-  const [show, setShow] = useState(false)
+  const [filmModInfo, setFilmModInfo] = useState(filmFiller)
+  const [actorModInfo, setActorModInfo] = useState(actorFiller)
+  const [showFilm, setShowFilm] = useState(false)
+  const [showActor, setShowActor] = useState(false)
   const [modTitle, setModTitle] = useState("")
 
   useEffect(() => {
@@ -31,18 +39,30 @@ const Home = () => {
     .catch(err => console.log(err))
   }, [])
 
-  const openMod = async(film) => {
+  const openFilmMod = async(film) => {
     await axios.get('http://localhost:5000/getFilmInfo/' + JSON.stringify(film.film_id))
     .then(res => {
-      setModInfo(res.data.Info)
+      setFilmModInfo(res.data.Info)
       setModTitle(film.title)
     })
-    .then(handleShow)
+    .then(handleShowFilm)
     .catch(err => console.log(err))
   }
 
-  const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
+  const openActorMod = async(actorName) => {
+    await axios.get('http://localhost:5000/getActorInfo/' + actorName)
+    .then(res => {
+      setActorModInfo(res.data)
+      setModTitle(actorName)
+    })
+    .then(handleShowActor)
+    .catch(err => console.log(err))
+  }
+
+  const handleCloseFilm = () => setShowFilm(false)
+  const handleShowFilm = () => setShowFilm(true)
+  const handleCloseActor = () => setShowActor(false)
+  const handleShowActor = () => setShowActor(true)
 
   return (
     <div>
@@ -65,7 +85,7 @@ const Home = () => {
                       style={{background:'none', border:'none', color:'black', cursor:'pointer', textDecoration:'none', padding:0, textAlign:'left'}} 
                       onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
                       onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
-                      onClick={() => openMod(film)}
+                      onClick={() => openFilmMod(film)}
                     >
                       {film.title}
                     </button>
@@ -81,7 +101,7 @@ const Home = () => {
         <div className='mt-3'>
           {
             actors.map((actor, index) => (
-              <ActorButton key={index}>
+              <ActorButton key={index} onClick={() => openActorMod(actor)}>
                 {actor}
               </ActorButton>
             ))
@@ -89,14 +109,26 @@ const Home = () => {
         </div>
       </div>
       
-      <Modal open={show} onClose={handleClose} title={modTitle}>
+      <Modal open={showFilm} onClose={handleCloseFilm} title={modTitle}>
         <div>
-          <b>Description</b>: {modInfo[0].description} <br/>
-          <b>Rating</b>: {modInfo[0].rating} <br/>
-          <b>Rental Duration</b>: {modInfo[0].rental_duration} Days <br/>
-          <b>Rental Rate</b>: ${modInfo[0].rental_rate} <br/>
-          <b>Inventory</b>: {modInfo[0].inv} <br/>
-          <b>Available</b>: {modInfo[0].number_available}
+          <b>Description</b>: {filmModInfo[0].description} <br/>
+          <b>Rating</b>: {filmModInfo[0].rating} <br/>
+          <b>Rental Duration</b>: {filmModInfo[0].rental_duration} Days <br/>
+          <b>Rental Rate</b>: ${filmModInfo[0].rental_rate} <br/>
+          <b>Inventory</b>: {filmModInfo[0].inv} <br/>
+          <b>Available</b>: {filmModInfo[0].number_available}
+        </div>
+      </Modal>
+
+      <Modal open={showActor} onClose={handleCloseActor} title={modTitle}>
+        <div>
+          <b>Total Films</b>: {actorModInfo.total_films} <br/><br/>
+          <b>Top 5 Rented Films</b>:<br/>
+          <ul>
+            {actorModInfo.top_films && actorModInfo.top_films.map((film, index) => (
+              <li key={index}>{film.title} - Rented {film.rental_count} times</li>
+            ))}
+          </ul>
         </div>
       </Modal>
     </div>

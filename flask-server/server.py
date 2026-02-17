@@ -125,6 +125,44 @@ def topActors():
         topactors.append(name)
     return jsonify({"Actors": topactors}), 200
 
+@app.route("/getActorInfo/<actor_name>", methods=['GET'])
+def get_actorInfo(actor_name):
+    con = get_db_connection()
+    cursor = con.cursor(dictionary=True)
+    
+    cursor.execute("""
+        select f.title, count(r.rental_id) as rental_count
+        from actor a
+        join film_actor fa on a.actor_id = fa.actor_id
+        join film f on fa.film_id = f.film_id
+        join inventory i on f.film_id = i.film_id
+        join rental r on i.inventory_id = r.inventory_id
+        where concat(a.first_name, ' ', a.last_name) = %s
+        group by f.film_id, f.title
+        order by rental_count desc
+        limit 5;
+    """, (actor_name,))
+    
+    top_films = cursor.fetchall()
+
+    cursor.execute("""
+        select count(*) as total_films
+        from actor a
+        join film_actor fa on a.actor_id = fa.actor_id
+        where concat(a.first_name, ' ', a.last_name) = %s;
+    """, (actor_name,))
+    
+    film_count = cursor.fetchone()
+    
+    cursor.close()
+    con.close()
+    
+    return jsonify({
+        "actor_name": actor_name,
+        "total_films": film_count['total_films'],
+        "top_films": top_films
+    }), 200
+
 @app.route("/topRentedFilms", methods=["GET"])
 def top_rented_films():
     con = get_db_connection()

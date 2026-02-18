@@ -4,8 +4,8 @@ const BUTTON_STYLES={
   borderRadius: "25px",
   backgroundColor: "#73AD21",
   padding: "20px",
-  width: "100px",
-  height: "150px",
+  width: "200px",
+  height: "300px",
   alignItems: "center",
   overflowWrap: "break-word"
 }

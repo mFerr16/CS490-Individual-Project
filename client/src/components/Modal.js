@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom';
 
 const MODAL_STYLES={
@@ -70,8 +70,18 @@ const BODY_STYLES={
   overflow:"hidden"
 }
 
-export default function Modal( { open, children, onClose, title } ) {
-  if(!open) return null 
+
+export default function Modal( { open, children, onClose, title, rental } ) {
+  
+  if(!open) return null
+  {/*} 
+  if(!rental) {
+    const [showRental, setShowRental] = useState(false)
+  }
+  else{
+    const [showRental, setShowRental] = useState(true)
+  }*/}
+  
   return ReactDOM.createPortal(
     <>
       <div style={OVERLAY_STYLES}>

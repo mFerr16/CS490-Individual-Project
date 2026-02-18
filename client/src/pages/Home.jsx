@@ -2,17 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import NavbarComp from '../components/navbar'
 import ActorButton from '../components/actorButton'
-<<<<<<< HEAD
-import { Container } from 'react-bootstrap'
-
-const ACTOR_STYLES={
-  bottom:"50%",
-  height:"50%",
-  alignItems: "center"
-}
-=======
 import Modal from '../components/Modal'
->>>>>>> 1db5eb2ea7915a5cb31dfa0f5bfd554ffdaf575b
 
 const Home = () => {
   const [data, setData] = useState([])
@@ -56,9 +46,7 @@ const Home = () => {
 
   return (
     <div>
-      <div>
-        <NavbarComp/>
-      </div>
+      <NavbarComp/>
       <div className='container'>
         <h2 className='mt-3'>Top 5 Rented Films</h2>
         <table className='table mt-3'>
@@ -100,28 +88,6 @@ const Home = () => {
           }
         </div>
       </div>
-<<<<<<< HEAD
-      {/*
-      <div style={ACTOR_STYLES}>
-        <Container>
-          <ActorButton>
-            test1
-          </ActorButton>
-          <ActorButton>
-            test2
-          </ActorButton>
-          <ActorButton>
-            test3
-          </ActorButton>
-          <ActorButton>
-            test4
-          </ActorButton>
-          <ActorButton>
-            test5
-          </ActorButton>
-        </Container>
-      </div>*/}
-=======
       
       <Modal open={show} onClose={handleClose} title={modTitle}>
         <div>
@@ -133,7 +99,6 @@ const Home = () => {
           <b>Available</b>: {modInfo[0].number_available}
         </div>
       </Modal>
->>>>>>> 1db5eb2ea7915a5cb31dfa0f5bfd554ffdaf575b
     </div>
   )
 }

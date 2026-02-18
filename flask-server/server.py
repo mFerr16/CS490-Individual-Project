@@ -2,7 +2,6 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import mysql.connector
 from flask_cors import cross_origin
-from markupsafe import escape
 
 import os
 from dotenv import load_dotenv

@@ -2,7 +2,8 @@ import React from 'react'
 
 const BUTTON_STYLES={
   borderRadius: "25px",
-  backgroundColor: "#f58f5c",
+  backgroundColor: "#000000",
+  bordercolor:"#ffff",
   padding: "20px",
   width: "15%",
   height: "250px",
@@ -11,13 +12,15 @@ const BUTTON_STYLES={
   marginright:"10px",
 }
 
-const ActorButton = ({children, onClick}) => {
+const FilmButton = ({children, onClick}) => {
 
   return (
         <button style={BUTTON_STYLES} size='lg' onClick={onClick}>
-            {children}
+            <font color="white">
+                {children}
+            </font>
         </button>
   )
 }
 
-export default ActorButton
+export default FilmButton

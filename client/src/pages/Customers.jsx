@@ -8,6 +8,13 @@ const EDITBUTTON_STYLES={
     backgroundColor:"#6b6b6b9f"
 }
 
+const BACKDROP_STYLES={
+  minheight:"100%",
+  height:"125vh",
+  width:"100vw",
+  background:"linear-gradient(315deg, #f0f0c0 0%, #E37107 55%, #f0f0c0 100%)"
+}
+
 
 const Customers = () => {
   const [data, setData] = useState([])
@@ -80,10 +87,12 @@ const Customers = () => {
 
   return (
 
-    <div>
-        <NavbarComp/>
+    <div style={BACKDROP_STYLES}>
+        <div>
+            <NavbarComp/>
+        </div>
     <div className='container mt-5'>
-        <input placeholder="Search" type="text" onChange={handleFilter}/>
+        <input placeholder="Search" type="text" onChange={handleFilter} style={{background:"none"}}/>
         <DataTable columns={ columns } data={ records } pagination fixedHeader/>
     </div>
   </div>

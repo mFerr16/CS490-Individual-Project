@@ -35,14 +35,6 @@ const BUTTON_STYLES={
   height:"5px"
 }
 
-const RENTBUTTON_STYLES={
-  position: "fixed",
-  borderRadius: "25px",
-  left: "37%",
-  backgroundColor: "#73AD21",
-  width:"20%",
-  alignItems: "center",
-}
 
 const MODHEAD_STYLES={
   position:"fixed",
@@ -71,7 +63,7 @@ const BODY_STYLES={
 }
 
 
-export default function Modal( { open, children, onClose, title } ) {
+export default function HomeModal( { open, children, onClose, title } ) {
   
   if(!open) return null
   
@@ -93,11 +85,6 @@ export default function Modal( { open, children, onClose, title } ) {
           </div>
           <div style={BODY_STYLES}>
             {children}
-              <button style={RENTBUTTON_STYLES} onClick={()=>console.log("test")}>
-                <font color="white">
-                  RENT
-                </font>
-              </button>
           </div>
         </div>
       </div>

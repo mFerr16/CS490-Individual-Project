@@ -5,6 +5,13 @@ import DataTable from 'react-data-table-component'
 import { CgInfo } from "react-icons/cg"
 import Modal from '../components/Modal'
 
+const BACKDROP_STYLES={
+  minheight:"100%",
+  height:"125vh",
+  width:"100vw",
+  background:"linear-gradient(315deg, #f0f0c0 0%, #E37107 55%, #f0f0c0 100%)"
+}
+
 const Films = () => {
 
  const filler = [{
@@ -94,11 +101,11 @@ const Films = () => {
 
   return (
     <>
-      <div>
+      <div style={BACKDROP_STYLES}>
         <NavbarComp/>
         <div className='container mt-5'>
-          <input placeholder="Search" type="text" onChange={handleFilter}/>
-          <DataTable show={false} columns={columns} data={records} fixedHeader pagination theme='light' />
+          <input placeholder="Search" type="text" onChange={handleFilter} style={{background:"none"}}/>
+          <DataTable show={false} columns={columns} data={records} fixedHeader pagination theme='light'/>
         </div>
         <Modal open={show} onClose={handleClose} title={modTitle}>
             <div>

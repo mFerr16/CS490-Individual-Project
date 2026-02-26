@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import NavbarComp from '../components/navbar'
-import DataTable from 'react-data-table-component';
+import DataTable from 'react-data-table-component'
+import CustomerModal from '../components/editCustomer'
 
 const EDITBUTTON_STYLES={
     alignItems: "center",
@@ -18,7 +19,10 @@ const BACKDROP_STYLES={
 
 const Customers = () => {
   const [data, setData] = useState([])
-  const [records, setRecords] = useState([]);
+  const [records, setRecords] = useState([])
+  const [show, setShow] = useState(false)
+  const [ID, setID] = useState({})
+  const [AID, setAID] = useState({})
 
   useEffect(()=>{
     axios.get('http://localhost:5000/getCustomers')
@@ -29,12 +33,15 @@ const Customers = () => {
     .catch(err=>console.log(err))
   }, [])
 
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   const columns=[
     {
-        name: "Customer ID",
+        name: "ID",
         selector: row=>row.customer_id,
         sortable: true,
-        width:"8rem"
+        width:"5rem"
     },
     {
         name: "First Name",
@@ -47,14 +54,14 @@ const Customers = () => {
         width:"7rem"
     },
     {
-        name: "Active",
-        selector: row=>row.active,
-        width:"5rem"
+        name: "Address",
+        selector: row=>row.address,
+        rem:"25rem"
     },
     {
-        name: "Address ID",
-        selector: row=>row.address_id,
-        width:"6rem"
+        name: "Postal Code",
+        selector: row=>row.postal_code,
+        width:"7rem"
     },
     {
         name: "Create Date",
@@ -64,11 +71,21 @@ const Customers = () => {
     {
         name: "Email",
         selector: row=>row.email,
-        width:"20rem"
+        width:"18rem"
+    },
+    {
+        name: "Phone",
+        selector: row=>row.phone,
+        width:"8rem"
+    },
+    {
+        name: "Address",
+        selector: row=>row.address_id,
+        omit: "True"
     },
     {
         name: "",
-        cell: row=>(<button style={EDITBUTTON_STYLES} onClick={()=>console.log("WIP")}>Edit</button>),
+        cell: row=>(<button style={EDITBUTTON_STYLES} onClick={()=>{setID(row.customer_id); setAID(row.address_id); handleShow()}}>Edit</button>),
         width:"10rem"
     },
 
@@ -86,7 +103,6 @@ const Customers = () => {
   }
 
   return (
-
     <div style={BACKDROP_STYLES}>
         <div>
             <NavbarComp/>
@@ -95,6 +111,7 @@ const Customers = () => {
         <input placeholder="Search" type="text" onChange={handleFilter} style={{background:"none"}}/>
         <DataTable columns={ columns } data={ records } pagination fixedHeader/>
     </div>
+    <CustomerModal open={show} onClose={handleClose} ID={ID} AddresID={AID}/>
   </div>
   )
 }

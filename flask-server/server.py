@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
 from flask_cors import cross_origin
@@ -20,6 +20,55 @@ def get_db_connection():
         password=os.getenv('database_pass'),
         database=os.getenv('database_name')
     )
+
+@app.route("/updateCustomer", methods=['POST'])
+def updateCustomer():
+    con = get_db_connection()
+    cursor=con.cursor()
+    data = request.get_json()
+    customerID = data["customer_id"]
+    addressID = data["address_id"]
+
+    if "phone" in data:
+        newPhone = data["phone"]
+        cursor.execute("""
+        update address
+        set phone = %s
+        where address_id = %s
+        """, (newPhone, addressID,))
+    
+    #c.email, c.create_date 
+    if "address" in data:
+        newAddress = data["address"]
+        cursor.execute("""
+        update address
+        set address = %s
+        where address_id = %s
+        """, (newAddress, addressID,))
+    
+    if "postal_code" in data:
+        newPcode = data["postal_code"]
+        cursor.execute("""
+        update address
+        set postal_code = %s
+        where address_id = %s
+        """, (newPcode, addressID,))
+    
+    if "email" in data:
+        newEmail = data["email"]
+        cursor.execute("""
+        update customer
+        set email = %s
+        where customer_id = %s
+        """, (newEmail, customerID,))
+    
+    con.commit()
+    con.close()
+
+    return jsonify({"message":"Customer added successfully"}), 200
+
+
+
 
 @app.route("/getFilmInfo/<film_id>", methods=['GET', 'POST'])
 @cross_origin()
@@ -82,8 +131,11 @@ def get_customers():
     cursor=con.cursor(dictionary=True)
     
     cursor.execute("""
-        select *
-        from customer;
+        select c.customer_id, c.first_name, c.last_name, a.address, a.phone, a.postal_code, c.email, c.create_date, c.address_id 
+        from customer c
+        join address a
+        on c.address_id = a.address_id
+        group by c.customer_id, c.first_name, c.last_name;
         """)
     data=cursor.fetchall()
     cursor.close()

@@ -80,6 +80,10 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
     const [postal, setPostal] = useState("")
     const [address, setAddress] = useState("")
     
+    function reloadPage(){
+      window.location.reload();
+    }
+
     function fillData(){
       let data = {}
       if (phoneNum !== ""){
@@ -97,13 +101,18 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
       data["customer_id"] = ID
       data["address_id"] = AddresID
 
-      console.log(data)
       postData(data)
+      reloadPage()
     }
 
-    function test(){
-      console.log("test")
+    function customerDelete(){
+      let data={}
+      data["customer_id"] = ID
+      data["address_id"] = AddresID
+      delCustomer(data)
+      reloadPage()
     }
+
 
     async function postData(data){
       if (!data){return}
@@ -120,7 +129,26 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
       }
 
       else{
-          //show failure message
+          console.log("ERROR: could not edit customer data")
+      }
+    }
+
+    async function delCustomer(data){
+      if (!data){return}
+
+      const response = await fetch("/deleteCustomer",{ 
+        method:"POST", 
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      })
+
+      if (response.ok){
+        //show success message 
+        console.log("Success")
+      }
+
+      else{
+          console.log("ERROR: could not delete customer data")
       }
     }
 
@@ -149,7 +177,7 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
                   SUBMIT
                 </font>
             </button>
-            <button style={DELETEBUTTON_STYLES} onClick={test}>
+            <button style={DELETEBUTTON_STYLES} onClick={customerDelete}>
               <font color="white">
                   DELETE
               </font>

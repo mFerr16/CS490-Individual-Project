@@ -68,6 +68,44 @@ def updateCustomer():
     return jsonify({"message":"Customer added successfully"}), 200
 
 
+@app.route("/deleteCustomer", methods=['POST'])
+def delCustomer():
+    con = get_db_connection()
+    cursor=con.cursor()
+    data = request.get_json()
+    customerID = data["customer_id"]
+    addressID = data["address_id"]
+
+    cursor.execute("""
+    select *
+    from rental as r
+    where r.return_date is null and r.customer_id = %s;
+    """, (customerID,))
+
+    rentals = cursor.fetchall()
+    if len(rentals) == 0:
+        con.commit()
+        con.close()
+        return {"Response": "ERROR: customer is currently renting a film"}, 301
+    else:
+        #update rental table
+        cursor.execute("""
+            update rental
+            set customer_id = 9999
+            where customer_id = %s
+        """,(customerID,))
+
+        cursor.execute("delete from payment where customer_id = %s", (customerID,))
+        cursor.execute("delete from customer where customer_id = %s", (customerID,)) #error bc im trying to delete foriegn key, possible solution (cascade delete), problem will remove rental count of films
+        cursor.execute("delete from address where address_id = %s", (addressID,))
+
+        con.commit()
+        con.close()
+
+        return {"Response": "Transaction Complete"}, 200
+    
+
+
 
 
 @app.route("/getFilmInfo/<film_id>", methods=['GET', 'POST'])
@@ -135,6 +173,7 @@ def get_customers():
         from customer c
         join address a
         on c.address_id = a.address_id
+        where c.customer_id != 9999
         group by c.customer_id, c.first_name, c.last_name;
         """)
     data=cursor.fetchall()

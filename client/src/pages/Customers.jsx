@@ -16,6 +16,11 @@ const BACKDROP_STYLES={
   background:"linear-gradient(315deg, #f0f0c0 0%, #E37107 55%, #f0f0c0 100%)"
 }
 
+const ADDBUTTON_STYLES={
+    backgroundColor: "#73AD21",
+    borderRadius: "5px",
+    alignText:"center"
+}
 
 const Customers = () => {
   const [data, setData] = useState([])
@@ -97,7 +102,7 @@ const Customers = () => {
         row=> 
           row.first_name.toLowerCase().includes(value) ||
           row.last_name.toLowerCase().includes(value) ||
-          JSON.stringify(row.customer_id).includes(value)
+          JSON.stringify(row.customer_id) === value
         )
         setRecords(newData)
   }
@@ -109,6 +114,11 @@ const Customers = () => {
         </div>
     <div className='container mt-5'>
         <input placeholder="Search" type="text" onChange={handleFilter} style={{background:"none"}}/>
+        <button onClick={()=>console.log("test")} style={ADDBUTTON_STYLES}>
+            <font style={{color:"#ffff", fowWeight:"bold"}}>
+                <b><b>+</b></b>
+            </font>
+        </button>
         <DataTable columns={ columns } data={ records } pagination fixedHeader/>
     </div>
     <CustomerModal open={show} onClose={handleClose} ID={ID} AddresID={AID}/>

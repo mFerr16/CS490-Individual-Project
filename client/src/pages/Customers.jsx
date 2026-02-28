@@ -3,6 +3,8 @@ import axios from 'axios'
 import NavbarComp from '../components/navbar'
 import DataTable from 'react-data-table-component'
 import CustomerModal from '../components/editCustomer'
+import { CgInfo } from "react-icons/cg"
+import AddCustomerModal from '../components/addCustomer'
 
 const EDITBUTTON_STYLES={
     alignItems: "center",
@@ -28,6 +30,8 @@ const Customers = () => {
   const [show, setShow] = useState(false)
   const [ID, setID] = useState({})
   const [AID, setAID] = useState({})
+  const [rentalMod, setRentalMod] = useState(false)
+  const [addMod, setAddMod] = useState(false)
 
   useEffect(()=>{
     axios.get('http://localhost:5000/getCustomers')
@@ -39,9 +43,21 @@ const Customers = () => {
   }, [])
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow  = () => setShow(true);
+  const rentMod     = () => setRentalMod(true);
+
+  const addCust     = () => setAddMod(true);
+  const closeAdd    = () => setAddMod(false);
 
   const columns=[
+    {
+      name: "",
+      sortable: false,
+      button: "true",
+      cell: row=>(
+        <button style={{background:'none', border:'none'}} onClick={()=>rentMod(row)}><CgInfo/></button>
+      )
+    },
     {
         name: "ID",
         selector: row=>row.customer_id,
@@ -67,11 +83,6 @@ const Customers = () => {
         name: "Postal Code",
         selector: row=>row.postal_code,
         width:"7rem"
-    },
-    {
-        name: "Create Date",
-        selector: row=>row.create_date,
-        width:"14rem"
     },
     {
         name: "Email",
@@ -114,7 +125,7 @@ const Customers = () => {
         </div>
     <div className='container mt-5'>
         <input placeholder="Search" type="text" onChange={handleFilter} style={{background:"none"}}/>
-        <button onClick={()=>console.log("test")} style={ADDBUTTON_STYLES}>
+        <button onClick={addCust} style={ADDBUTTON_STYLES}>
             <font style={{color:"#ffff", fowWeight:"bold"}}>
                 <b><b>+</b></b>
             </font>
@@ -122,6 +133,7 @@ const Customers = () => {
         <DataTable columns={ columns } data={ records } pagination fixedHeader/>
     </div>
     <CustomerModal open={show} onClose={handleClose} ID={ID} AddresID={AID}/>
+    <AddCustomerModal open={addMod} onClose={closeAdd}/>
   </div>
   )
 }

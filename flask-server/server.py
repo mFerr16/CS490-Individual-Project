@@ -21,6 +21,30 @@ def get_db_connection():
         database=os.getenv('database_name')
     )
 
+@app.route("/addCustomer", methods=['POST'])
+def addCustomer():
+    con = get_db_connection()
+    cursor=con.cursor()
+    data = request.get_json()
+
+    cursor.execute("""
+        insert into address(address, district, city_id, postal_code, phone, location)
+        values (%s, 'None', 1, %s, %s, Point(1,1));
+        """, (data["address"], data["postal_code"], data["phone"],))
+    cursor.execute("select LAST_INSERT_ID()")
+    adID = cursor.fetchone()
+
+    cursor.execute("""
+        insert into customer (first_name, last_name, store_id, email, address_id, active)
+        values (%s, %s, 1, %s, %s, 1);
+        """, (data["first_name"], data["last_name"], data["email"], adID[0], ))
+    con.commit()
+    cursor.close()
+    con.close()
+
+    return jsonify({"message":"Customer added successfully"}), 200
+
+
 @app.route("/updateCustomer", methods=['POST'])
 def updateCustomer():
     con = get_db_connection()
@@ -63,6 +87,7 @@ def updateCustomer():
         """, (newEmail, customerID,))
     
     con.commit()
+    cursor.close()
     con.close()
 
     return jsonify({"message":"Customer added successfully"}), 200
@@ -83,18 +108,20 @@ def delCustomer():
     """, (customerID,))
 
     rentals = cursor.fetchall()
-    if len(rentals) == 0:
+    print(rentals)
+    #not working properly
+    if len(rentals) > 0:
         con.commit()
         con.close()
-        return {"Response": "ERROR: customer is currently renting a film"}, 301
+        return {"Response": "ERROR: customer is currently renting a film"}, 999
     else:
         #update rental table
+        #600 used as replacement customer ID for rentals
         cursor.execute("""
             update rental
-            set customer_id = 9999
+            set customer_id = 600
             where customer_id = %s
         """,(customerID,))
-
         cursor.execute("delete from payment where customer_id = %s", (customerID,))
         cursor.execute("delete from customer where customer_id = %s", (customerID,)) #error bc im trying to delete foriegn key, possible solution (cascade delete), problem will remove rental count of films
         cursor.execute("delete from address where address_id = %s", (addressID,))
@@ -103,6 +130,7 @@ def delCustomer():
         con.close()
 
         return {"Response": "Transaction Complete"}, 200
+
     
 
 
@@ -173,7 +201,7 @@ def get_customers():
         from customer c
         join address a
         on c.address_id = a.address_id
-        where c.customer_id != 9999
+        where c.customer_id != 600
         group by c.customer_id, c.first_name, c.last_name;
         """)
     data=cursor.fetchall()

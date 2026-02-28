@@ -30,8 +30,7 @@ const BUTTON_STYLES={
   position:"fixed",
   background:"none",
   border:"none",
-  top:"10px",
-  right:"10px",
+  right:"1%",
   height:"5px"
 }
 

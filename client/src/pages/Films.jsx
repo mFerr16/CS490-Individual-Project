@@ -38,6 +38,7 @@ const Films = () => {
     .catch(err=>console.log(err))
   }, [])
   
+  
   const openMod = async(row)=>{ 
     await axios.get('http://localhost:5000/getFilmInfo/'+JSON.stringify(row.film_id)).then(res=> {
       setModInfo(res.data.Info);
@@ -47,19 +48,12 @@ const Films = () => {
   }
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow  = () => setShow(true);
+  
 
 
   const columns = [
     //width: '3rem' 
-    {
-      name: "",
-      sortable: false,
-      button: "true",
-      cell: row=>(
-        <button style={{background:'none', border:'none'}} onClick={()=>openMod(row)}><CgInfo/></button>
-      )
-    },
     {
       name: 'Film ID',
       selector: row=>row.film_id,

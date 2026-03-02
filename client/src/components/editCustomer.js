@@ -53,6 +53,13 @@ const BODY_STYLES={
   overflow:"hidden"
 }
 
+const ERROR_STYLES={
+  fontSize: '0.9px',
+  color: "#f70e0e",
+  textAlign: "left"
+
+}
+
 const SUBMITBUTTON_STYLES={
   position: "fixed",
   borderRadius: "25px",
@@ -71,6 +78,12 @@ const DELETEBUTTON_STYLES={
   alignItems: "center"
 }
 
+function ErrorMSG({show}){
+  if(!show){return null}
+  return(
+    <font color="#f50303">Invalid Email</font>
+  )
+}
 
 export default function CustomerModal( { open, onClose, ID, AddresID} ) {
    
@@ -78,7 +91,11 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
     const [email, setEmail] = useState("")
     const [postal, setPostal] = useState("")
     const [address, setAddress] = useState("")
+
+    const [error, setError] = useState(false)
     
+    let emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9]+$/
+
     function reloadPage(){
       window.location.reload();
     }
@@ -89,6 +106,11 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
         data["phone"] = phoneNum
       }
       if (email !== ""){
+        if(!emailReg.test(email)){
+          setError(true)
+          console.log("invalid email")
+          return;
+        }
         data["email"] = email
       }
       if (postal !== ""){
@@ -164,14 +186,15 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
             </button>
           </div>
           <div style={BODY_STYLES}>
-            <h3>Email:</h3> <input style={{width:"80%"}}type="text" onChange={(e)=>setEmail(e.target.value)}/>
+            <h3>Email:</h3> <input id="email" style={{width:"80%"}} type="email" onChange={(e)=>{setEmail(e.target.value); setError(false)}}/>
+            <div styles={ERROR_STYLES}><ErrorMSG show={error}/></div>
             <h3>Address:</h3> <input style={{width:"80%"}}type="text" onChange={(e)=>setAddress(e.target.value)}/>
             <h3>Postal:</h3> <input style={{width:"80%"}}type="text" onChange={(e)=>setPostal(e.target.value)}/>
             <h3>Phone:</h3> <input style={{width:"80%"}}type="text" onChange={(e)=>setPhoneNum(e.target.value)}/>
             <br/>
           </div>
           <div>
-            <button style={SUBMITBUTTON_STYLES} onClick={fillData}>
+            <button style={SUBMITBUTTON_STYLES} onClick={fillData} disabled={!email && !address && !postal && !phoneNum}>
                 <font color="white">
                   SUBMIT
                 </font>

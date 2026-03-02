@@ -78,10 +78,17 @@ const DELETEBUTTON_STYLES={
   alignItems: "center"
 }
 
-function ErrorMSG({show}){
+function EmailErrorMSG({show}){
   if(!show){return null}
   return(
     <font color="#f50303">Invalid Email</font>
+  )
+}
+
+function PostalErrorMSG({show}){
+  if(!show){return null}
+  return(
+    <font color="#f50303">Invalid ZipCode</font>
   )
 }
 
@@ -92,7 +99,8 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
     const [postal, setPostal] = useState("")
     const [address, setAddress] = useState("")
 
-    const [error, setError] = useState(false)
+    const [emailerror, setEmailError] = useState(false)
+    const [postalerror, setPostalError] = useState(false)
     
     let emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9]+$/
 
@@ -102,18 +110,23 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
 
     function fillData(){
       let data = {}
+      let valid = true;
       if (phoneNum !== ""){
         data["phone"] = phoneNum
       }
       if (email !== ""){
         if(!emailReg.test(email)){
-          setError(true)
+          setEmailError(true)
+          valid = false;
           console.log("invalid email")
-          return;
         }
         data["email"] = email
       }
       if (postal !== ""){
+        if(postal.length !== 5){
+          setPostalError(true)
+          valid=false;
+        }
         data["postal_code"] = postal
       }
       if (address !== ""){
@@ -121,6 +134,10 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
       }
       data["customer_id"] = ID
       data["address_id"] = AddresID
+
+      if(!valid){
+        return;
+      }
 
       postData(data)
       reloadPage()
@@ -186,10 +203,11 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
             </button>
           </div>
           <div style={BODY_STYLES}>
-            <h3>Email:</h3> <input id="email" style={{width:"80%"}} type="email" onChange={(e)=>{setEmail(e.target.value); setError(false)}}/>
-            <div styles={ERROR_STYLES}><ErrorMSG show={error}/></div>
+            <h3>Email:</h3> <input id="email" style={{width:"80%"}} type="email" onChange={(e)=>{setEmail(e.target.value); setEmailError(false)}}/>
+            <div styles={ERROR_STYLES}><EmailErrorMSG show={emailerror}/></div>
             <h3>Address:</h3> <input style={{width:"80%"}}type="text" onChange={(e)=>setAddress(e.target.value)}/>
-            <h3>Postal:</h3> <input style={{width:"80%"}}type="text" onChange={(e)=>setPostal(e.target.value)}/>
+            <h3>Postal:</h3> <input style={{width:"80%"}}type="text" onChange={(e)=>{setPostal(e.target.value); setPostalError(false)}}/>
+            <div styles={ERROR_STYLES}><PostalErrorMSG show={postalerror}/></div>
             <h3>Phone:</h3> <input style={{width:"80%"}}type="text" onChange={(e)=>setPhoneNum(e.target.value)}/>
             <br/>
           </div>

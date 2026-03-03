@@ -5,6 +5,7 @@ import DataTable from 'react-data-table-component'
 import CustomerModal from '../components/editCustomer'
 import { CgInfo } from "react-icons/cg"
 import AddCustomerModal from '../components/addCustomer'
+import RentalHistoryModal from '../components/rentalHistoryModal'
 
 const EDITBUTTON_STYLES={
     alignItems: "center",
@@ -32,6 +33,8 @@ const Customers = () => {
   const [AID, setAID] = useState({})
   const [rentalMod, setRentalMod] = useState(false)
   const [addMod, setAddMod] = useState(false)
+  const [selectedCustomer, setSelectedCustomer] = useState({})
+  const [rentalHistory, setRentalHistory] = useState({current_rentals: [], past_rentals: []})
 
   useEffect(()=>{
     axios.get('http://localhost:5000/getCustomers')
@@ -42,12 +45,22 @@ const Customers = () => {
     .catch(err=>console.log(err))
   }, [])
 
-  const handleClose = () => setShow(false);
-  const handleShow  = () => setShow(true);
-  const rentMod     = () => setRentalMod(true);
+  const handleClose = () => setShow(false)
+  const handleShow  = () => setShow(true)
+  const closeRentalMod = () => setRentalMod(false)
 
-  const addCust     = () => setAddMod(true);
-  const closeAdd    = () => setAddMod(false);
+  const addCust     = () => setAddMod(true)
+  const closeAdd    = () => setAddMod(false)
+
+  const openRentalMod = async(row) => {
+    setSelectedCustomer(row)
+    await axios.get('http://localhost:5000/getCustomerRentals/' + row.customer_id)
+    .then(res => {
+      setRentalHistory(res.data)
+      setRentalMod(true)
+    })
+    .catch(err => console.log(err))
+  }
 
   const columns=[
     {
@@ -55,7 +68,7 @@ const Customers = () => {
       sortable: false,
       button: "true",
       cell: row=>(
-        <button style={{background:'none', border:'none'}} onClick={()=>rentMod(row)}><CgInfo/></button>
+        <button style={{background:'none', border:'none'}} onClick={()=>openRentalMod(row)}><CgInfo/></button>
       )
     },
     {
@@ -104,7 +117,6 @@ const Customers = () => {
         cell: row=>(<button style={EDITBUTTON_STYLES} onClick={()=>{setID(row.customer_id); setAID(row.address_id); handleShow()}}>Edit</button>),
         width:"10rem"
     },
-
   ]
 
   function handleFilter(event){
@@ -134,6 +146,7 @@ const Customers = () => {
     </div>
     <CustomerModal open={show} onClose={handleClose} ID={ID} AddresID={AID}/>
     <AddCustomerModal open={addMod} onClose={closeAdd}/>
+    <RentalHistoryModal open={rentalMod} onClose={closeRentalMod} customer={selectedCustomer} rentals={rentalHistory}/>
   </div>
   )
 }

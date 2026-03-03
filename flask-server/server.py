@@ -209,6 +209,40 @@ def get_customers():
     con.close()
     return jsonify({"customers":data}), 200
 
+@app.route("/getCustomerRentals/<customer_id>", methods=['GET'])
+def get_customer_rentals(customer_id):
+    con = get_db_connection()
+    cursor = con.cursor(dictionary=True)
+    
+    cursor.execute("""
+        select f.title, r.rental_date
+        from rental r
+        join inventory i on r.inventory_id = i.inventory_id
+        join film f on i.film_id = f.film_id
+        where r.customer_id = %s and r.return_date is null
+        order by r.rental_date desc;
+    """, (customer_id,))
+    current_rentals = cursor.fetchall()
+    
+    cursor.execute("""
+        select f.title, r.rental_date, r.return_date
+        from rental r
+        join inventory i on r.inventory_id = i.inventory_id
+        join film f on i.film_id = f.film_id
+        where r.customer_id = %s and r.return_date is not null
+        order by r.return_date desc
+        limit 10;
+    """, (customer_id,))
+    past_rentals = cursor.fetchall()
+    
+    cursor.close()
+    con.close()
+    
+    return jsonify({
+        "current_rentals": current_rentals,
+        "past_rentals": past_rentals
+    }), 200
+
 @app.route("/getTable", methods=['GET'])
 def get_tables():
     con = get_db_connection()

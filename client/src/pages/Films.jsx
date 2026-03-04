@@ -41,6 +41,8 @@ const Films = () => {
   
   const openMod = async(row)=>{ 
     await axios.get('http://localhost:5000/getFilmInfo/'+JSON.stringify(row.film_id)).then(res=> {
+      const filmData = res.data.Info;
+      filmData[0].film_id = row.film_id;
       setModInfo(res.data.Info);
       setModTitle(row.title);
       console.log(modInfo)

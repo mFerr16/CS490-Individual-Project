@@ -78,6 +78,7 @@ const DELETEBUTTON_STYLES={
   alignItems: "center"
 }
 
+
 function EmailErrorMSG({show}){
   if(!show){return null}
   return(
@@ -101,7 +102,8 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
 
     const [emailerror, setEmailError] = useState(false)
     const [postalerror, setPostalError] = useState(false)
-    
+   // const [showSuccess, setShowSuccess] = useState(false)
+
     let emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9]+$/
 
     function reloadPage(){
@@ -181,7 +183,9 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
       })
 
       if (response.ok){
-        //show success message 
+        /*
+        setShowSuccess(true)
+        setTimeout(()=>{setShowSuccess(false)}, 1000)*/
         console.log("Success")
       }
 

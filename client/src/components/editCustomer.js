@@ -93,6 +93,13 @@ function PostalErrorMSG({show}){
   )
 }
 
+function PhoneErrorMSG({show}){
+  if(!show){return null}
+  return(
+    <font color="#f50303">Invalid Phone Number</font>
+  )
+}
+
 export default function CustomerModal( { open, onClose, ID, AddresID} ) {
    
     const [phoneNum, setPhoneNum] = useState("")
@@ -102,7 +109,7 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
 
     const [emailerror, setEmailError] = useState(false)
     const [postalerror, setPostalError] = useState(false)
-   // const [showSuccess, setShowSuccess] = useState(false)
+    const [phoneerror, setPhoneError] = useState(false)
 
     let emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9]+$/
 
@@ -114,6 +121,11 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
       let data = {}
       let valid = true;
       if (phoneNum !== ""){
+        if(phoneNum.length<10){
+          setPhoneError(true)
+          valid = false;
+          console.log("invalid phone number")
+        }
         data["phone"] = phoneNum
       }
       if (email !== ""){
@@ -183,9 +195,6 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
       })
 
       if (response.ok){
-        /*
-        setShowSuccess(true)
-        setTimeout(()=>{setShowSuccess(false)}, 1000)*/
         console.log("Success")
       }
 
@@ -213,6 +222,7 @@ export default function CustomerModal( { open, onClose, ID, AddresID} ) {
             <h3>Postal:</h3> <input style={{width:"80%"}}type="text" onChange={(e)=>{setPostal(e.target.value); setPostalError(false)}}/>
             <div styles={ERROR_STYLES}><PostalErrorMSG show={postalerror}/></div>
             <h3>Phone:</h3> <input style={{width:"80%"}}type="text" onChange={(e)=>setPhoneNum(e.target.value)}/>
+            <div styles={ERROR_STYLES}><PhoneErrorMSG show={phoneerror}/></div>
             <br/>
           </div>
           <div>

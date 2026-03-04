@@ -62,6 +62,34 @@ const SUBMITBUTTON_STYLES={
   alignItems: "center"
 }
 
+const ERROR_STYLES={
+  fontSize: '0.9px',
+  color: "#f70e0e",
+  textAlign: "left"
+
+}
+
+function EmailErrorMSG({show}){
+  if(!show){return null}
+  return(
+    <font color="#f50303">Invalid Email</font>
+  )
+}
+
+function PostalErrorMSG({show}){
+  if(!show){return null}
+  return(
+    <font color="#f50303">Invalid ZipCode</font>
+  )
+}
+
+function PhoneErrorMSG({show}){
+  if(!show){return null}
+  return(
+    <font color="#f50303">Invalid Phone Number</font>
+  )
+}
+
 export default function AddCustomerModal( { open, onClose} ) {
 
       const [first, setFirst] = useState('')
@@ -71,6 +99,12 @@ export default function AddCustomerModal( { open, onClose} ) {
       const [postal, setPostal] = useState('')
       const [phone, setPhone] = useState('')
 
+      const [emailerror, setEmailError] = useState(false)
+      const [postalerror, setPostalError] = useState(false)
+      const [phoneerror, setPhoneError] = useState(false)
+
+      let emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9]+$/
+      
       if (!open){return null}
 
 
@@ -79,13 +113,35 @@ export default function AddCustomerModal( { open, onClose} ) {
       }
 
       function fillData(){
+        let valid = true
         let data = {}
         data["first_name"] = first
         data["last_name"] = last
-        data["email"] = email
+
+        if(!emailReg.test(email)){
+          setEmailError(true)
+          valid = false;
+          console.log("invalid email")
+        }
+        else{data["email"] = email}
+
         data["address"] = address
-        data["postal_code"] = postal
-        data["phone"] = phone
+
+        if(postal.length !== 5){
+          setPostalError(true)
+          valid=false;
+        }
+        else{data["postal_code"] = postal}
+
+        if(phone.length<10){
+          setPhoneError(true)
+          valid = false;
+          console.log("invalid phone number")
+        }
+        else{data["phone"] = phone}
+
+        if(!valid){return}
+
         postData(data)
         reloadPage()
       }
@@ -125,9 +181,12 @@ export default function AddCustomerModal( { open, onClose} ) {
                 <input placeHolder="First Name" style={{width:"80%"}}type="text" onChange={(e)=>setFirst(e.target.value)}/>
                 <input placeHolder="Last Name" style={{width:"80%"}}type="text" onChange={(e)=>setLast(e.target.value)}/>
                 <input placeHolder="Email" style={{width:"80%"}}type="text" onChange={(e)=>setEmail(e.target.value)}/>
+                <div styles={ERROR_STYLES}><EmailErrorMSG show={emailerror}/></div>
                 <input placeHolder="Address" style={{width:"80%"}}type="text" onChange={(e)=>setAddress(e.target.value)}/>
                 <input placeHolder="ZipCode" style={{width:"80%"}}type="text" onChange={(e)=>setPostal(e.target.value)}/>
+                <div styles={ERROR_STYLES}><PostalErrorMSG show={postalerror}/></div>
                 <input placeHolder="Phone #" style={{width:"80%"}}type="text" onChange={(e)=>setPhone(e.target.value)}/>
+                <div styles={ERROR_STYLES}><PhoneErrorMSG show={phoneerror}/></div>
                 <br/>
               </div>
               <div>

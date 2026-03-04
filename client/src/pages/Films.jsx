@@ -53,7 +53,17 @@ const Films = () => {
 
 
   const columns = [
-    //width: '3rem' 
+
+    {
+      name: "",
+      sortable: false,
+      button: "true",
+      cell: row=>(
+        <button style={{background:'none', border:'none'}} onClick={()=>openMod(row)}><CgInfo/></button>),
+      allowOverFlow: true,
+      width: "50px"
+    },
+     
     {
       name: 'Film ID',
       selector: row=>row.film_id,
@@ -101,7 +111,7 @@ const Films = () => {
           <input placeholder="Search" type="text" onChange={handleFilter} style={{background:"none"}}/>
           <DataTable show={false} columns={columns} data={records} fixedHeader pagination theme='light'/>
         </div>
-        <Modal open={show} onClose={handleClose} title={modTitle}>
+        <Modal open={show} onClose={handleClose} title={modTitle} filmId={modInfo[0]?.film_id}>
             <div>
               <b>Description</b>: {modInfo[0].description} <br/>
               <b>Rating</b>: {modInfo[0].rating} <br/>

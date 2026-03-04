@@ -1,5 +1,6 @@
-import React, {useState, useEffect} from 'react'
-import ReactDOM from 'react-dom';
+import React, { useState, useEffect } from 'react'
+import ReactDOM from 'react-dom'
+import axios from 'axios'
 
 const MODAL_STYLES={
   position: "fixed",
@@ -70,10 +71,47 @@ const BODY_STYLES={
   overflow:"hidden"
 }
 
+export default function Modal({ open, children, onClose, title, filmId }) {
+  const [customers, setCustomers] = useState([])
+  const [selectedCustomer, setSelectedCustomer] = useState("")
+  const [showDropdown, setShowDropdown] = useState(false)
 
-export default function Modal( { open, children, onClose, title } ) {
-  
-  if(!open) return null
+  useEffect(() => {
+    if (open) {
+      axios.get('http://localhost:5000/getCustomers')
+      .then(res => setCustomers(res.data.customers))
+      .catch(err => console.log(err))
+    }
+  }, [open])
+
+  function handleRent() {
+    if (!selectedCustomer) {
+      alert("Please select a customer")
+      return
+    }
+
+    const data = {
+      film_id: filmId,
+      customer_id: selectedCustomer
+    }
+
+    axios.post('http://localhost:5000/rentFilm', data)
+    .then(res => {
+      alert(res.data.message)
+      setShowDropdown(false)
+      setSelectedCustomer("")
+      onClose()
+    })
+    .catch(err => {
+      if (err.response) {
+        alert(err.response.data.message)
+      } else {
+        alert("Error renting film")
+      }
+    })
+  }
+
+  if (!open) return null
   
   return ReactDOM.createPortal(
     <>
@@ -93,11 +131,45 @@ export default function Modal( { open, children, onClose, title } ) {
           </div>
           <div style={BODY_STYLES}>
             {children}
-              <button style={RENTBUTTON_STYLES} onClick={()=>console.log("test")}>
+            
+            {!showDropdown && (
+              <button style={RENTBUTTON_STYLES} onClick={() => setShowDropdown(true)}>
                 <font color="white">
                   RENT
                 </font>
               </button>
+            )}
+
+            {showDropdown && (
+              <div>
+                <br/><br/>
+                <select 
+                  value={selectedCustomer} 
+                  onChange={(e) => setSelectedCustomer(e.target.value)}
+                  style={{width: "80%", padding: "5px"}}
+                >
+                  <option value="">Select Customer</option>
+                  {customers.map(customer => (
+                    <option key={customer.customer_id} value={customer.customer_id}>
+                      {customer.first_name} {customer.last_name}
+                    </option>
+                  ))}
+                </select>
+                <br/><br/>
+                <button 
+                  onClick={handleRent}
+                  style={{...RENTBUTTON_STYLES, backgroundColor: "#73AD21"}}
+                >
+                  <font color="white">CONFIRM RENT</font>
+                </button>
+                <button 
+                  onClick={() => setShowDropdown(false)}
+                  style={{...RENTBUTTON_STYLES, left: "60%", backgroundColor: "#d21e1e"}}
+                >
+                  <font color="white">CANCEL</font>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -243,6 +243,83 @@ def get_customer_rentals(customer_id):
         "past_rentals": past_rentals
     }), 200
 
+@app.route("/rentFilm", methods=['POST'])
+def rent_film():
+    con = get_db_connection()
+    cursor = con.cursor()
+    data = request.get_json()
+    
+    film_id = data["film_id"]
+    customer_id = data["customer_id"]
+    
+    cursor.execute("""
+        select i.inventory_id
+        from inventory i
+        left join rental r on i.inventory_id = r.inventory_id and r.return_date is null
+        where i.film_id = %s and r.rental_id is null
+        limit 1;
+    """, (film_id,))
+    
+    inventory = cursor.fetchone()
+    
+    if not inventory:
+        cursor.close()
+        con.close()
+        return jsonify({"message": "No copies available"}), 400
+    
+    inventory_id = inventory[0]
+    
+    cursor.execute("""
+        insert into rental (rental_date, inventory_id, customer_id, staff_id)
+        values (NOW(), %s, %s, 1);
+    """, (inventory_id, customer_id))
+    
+    con.commit()
+    cursor.close()
+    con.close()
+    
+    return jsonify({"message": "Film rented successfully"}), 200
+
+@app.route("/returnFilm", methods=['POST'])
+def return_film():
+    con = get_db_connection()
+    cursor = con.cursor(dictionary=True)
+    data = request.get_json()
+    
+    customer_id = data["customer_id"]
+    film_title = data["film_title"]
+    
+    cursor.execute("""
+        select r.rental_id
+        from rental r
+        join inventory i on r.inventory_id = i.inventory_id
+        join film f on i.film_id = f.film_id
+        where r.customer_id = %s 
+        and f.title = %s 
+        and r.return_date is null
+        limit 1;
+    """, (customer_id, film_title))
+    
+    rental = cursor.fetchone()
+    
+    if not rental:
+        cursor.close()
+        con.close()
+        return jsonify({"message": "Rental not found"}), 404
+    
+    cursor.execute("""
+        update rental
+        set return_date = NOW()
+        where rental_id = %s;
+    """, (rental['rental_id'],))
+    
+    con.commit()
+    cursor.close()
+    con.close()
+    
+    return jsonify({"message": "Film returned successfully"}), 200
+
+
 @app.route("/getTable", methods=['GET'])
 def get_tables():
     con = get_db_connection()

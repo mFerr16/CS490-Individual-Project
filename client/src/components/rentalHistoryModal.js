@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import axios from 'axios'
 
 const MODAL_STYLES={
   position: "fixed",
@@ -52,7 +53,35 @@ const BODY_STYLES={
   paddingBottom:"25px",
 }
 
+const RETURNBUTTON_STYLES={
+  backgroundColor: "#73AD21",
+  color: "white",
+  border: "none",
+  borderRadius: "5px",
+  padding: "5px 10px",
+  marginLeft: "10px",
+  cursor: "pointer"
+}
+
 export default function RentalHistoryModal({ open, onClose, customer, rentals }) {
+  
+  function handleReturn(filmTitle) {
+    const data = {
+      customer_id: customer.customer_id,
+      film_title: filmTitle
+    }
+
+    axios.post('http://localhost:5000/returnFilm', data)
+    .then(res => {
+      alert(res.data.message)
+      window.location.reload()
+    })
+    .catch(err => {
+      alert("Error returning film")
+      console.log(err)
+    })
+  }
+
   if (!open) return null
 
   return ReactDOM.createPortal(
@@ -73,6 +102,12 @@ export default function RentalHistoryModal({ open, onClose, customer, rentals })
                 {rentals.current_rentals.map((rental, index) => (
                   <li key={index}>
                     <b>{rental.title}</b> - Rented: {new Date(rental.rental_date).toLocaleDateString()}
+                    <button 
+                      style={RETURNBUTTON_STYLES} 
+                      onClick={() => handleReturn(rental.title)}
+                    >
+                      Return
+                    </button>
                   </li>
                 ))}
               </ul>
